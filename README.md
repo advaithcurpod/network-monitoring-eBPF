@@ -1,19 +1,16 @@
-# network-monitoring-eBPF
+# Network Monitoring with eBPF
 
-Change the network interface to your interface in ```start.sh``` and ```stop.sh```
+## Commands to run
 
-### Commands to run
+Change the network interface to your interface in the [Makefile](./Makefile).
 
-```chmod +x start.sh```
+```make``` to compile the program.
 
-```chmod +x stop.sh```
+To load the XDP program, run
+```sudo make load```
 
-The IP to be blocked is in the [xdp_ipv6_filter.c](./xdp_ipv6_filter.c) file. You can change it based on whuch IP you are blocking.
+To unload the XDP program, run
+```sudo make unload```
 
-Open wireshark and see if all packets from the blocked IP are actually being dropped after loading the XDP program.
-
-PS: **Currently program is failing** :? :/
-
-To load the XDP program, run ```./start.sh```
-
-To unload the XDP program, run ```./stop.sh```
+[userspace.py](./userspace.py) updates the eBPF map from the userspace. Run it with
+```sudo python3 userspace.py```

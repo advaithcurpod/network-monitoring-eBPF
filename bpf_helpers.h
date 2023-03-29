@@ -164,13 +164,13 @@ bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
  * Helper structure used by eBPF C program
  * to describe BPF map attributes to libbpf loader
  */
-struct bpf_map_def {
-	unsigned int type;
-	unsigned int key_size;
-	unsigned int value_size;
-	unsigned int max_entries;
-	unsigned int map_flags;
-} __attribute__((deprecated("use BTF-defined maps in .maps section")));
+// struct bpf_map_def {
+// 	unsigned int type;
+// 	unsigned int key_size;
+// 	unsigned int value_size;
+// 	unsigned int max_entries;
+// 	unsigned int map_flags;
+// } __attribute__((deprecated("use BTF-defined maps in .maps section")));
 
 enum libbpf_pin_type {
 	LIBBPF_PIN_NONE,

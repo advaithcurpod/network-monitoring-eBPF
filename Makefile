@@ -1,26 +1,30 @@
-KDIR ?= /lib/modules/$(shell uname -r)/build
-CLANG ?= clang
-LLC ?= llc
-ARCH := $(subst x86_64,x86,$(shell arch))
+# Define the clang compiler and flags
+CLANG = clang
+CLANG_FLAGS = -O2 -target bpf -c
 
-BIN := xdp_ipv6_filter.o
-CLANG_FLAGS = -I. -I$(KDIR)/arch/$(ARCH)/include \
-	-I$(KDIR)/arch/$(ARCH)/include/generated \
-	-I$(KDIR)/include \
-	-I$(KDIR)/arch/$(ARCH)/include/uapi \
-	-I$(KDIR)/include/uapi \
-	-include $(KDIR)/include/linux/kconfig.h \
-	-D__KERNEL__ -D__BPF_TRACING__ -Wno-unused-value -Wno-pointer-sign \
-	-D__TARGET_ARCH_$(ARCH) -Wno-compare-distinct-pointer-types \
-	-Wno-gnu-variable-sized-type-not-at-end \
-	-Wno-address-of-packed-member -Wno-tautological-compare \
-	-O2 -emit-llvm
+# Define the source and object files
+SRC = map.c
+OBJ = map.o
 
-all: $(BIN)
+# Define the target interface and map name
+IFACE = wlp5s0
+MAP = ip_map
 
-xdp_ipv6_filter.o: xdp_ipv6_filter.c
-	$(CLANG) $(CLANG_FLAGS) -c $< -o - | \
-	$(LLC) -march=bpf -mcpu=$(CPU) -filetype=obj -o $@
+# Define the default rule to compile the program
+all: $(OBJ)
 
+# Define the rule to compile the source file
+$(OBJ): $(SRC)
+	$(CLANG) $(CLANG_FLAGS) $< -o $@
+
+# Define the rule to load the program on the interface
+load: $(OBJ)
+	ip link set dev $(IFACE) xdp obj $(OBJ) sec xdp verbose
+
+# Define the rule to unload the program from the interface
+unload:
+	ip link set dev $(IFACE) xdp off
+
+# Define the rule to clean up the object file
 clean:
-	rm -f *.o
+	rm -f $(OBJ)
