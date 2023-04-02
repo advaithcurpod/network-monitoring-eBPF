@@ -2,8 +2,6 @@
 #include <linux/if_ether.h>
 #include <linux/ip.h>
 #include <linux/ipv6.h>
-#include <string.h>
-
 #include <linux/pkt_cls.h>
 #include <linux/if_packet.h>
 #include <linux/icmp.h>
@@ -48,41 +46,45 @@ struct bpf_map_def {
 };
 
 // Define two maps, one for IPv4 and one for IPv6 addresses
-struct bpf_map_def SEC("maps") ip4_map = {
-    .type = BPF_MAP_TYPE_HASH,
-    .key_size = IP4_KEY_SIZE,
-    .value_size = IP4_VALUE_SIZE,
-    .max_entries = 1024,
+// struct bpf_map_def SEC("maps") ip4_map = {
+//     .type = BPF_MAP_TYPE_HASH,
+//     .key_size = IP4_KEY_SIZE,
+//     .value_size = IP4_VALUE_SIZE,
+//     .max_entries = 1024,
+// };
+
+// struct bpf_map_def SEC("maps") ip6_map = {
+//     .type = BPF_MAP_TYPE_HASH,
+//     .key_size = IP6_KEY_SIZE,
+//     .value_size = IP6_VALUE_SIZE,
+//     .max_entries = 1024,
+// };
+
+struct ipv6kv {
+    __u8 kv[16];
 };
 
-struct bpf_map_def SEC("maps") ip6_map = {
-    .type = BPF_MAP_TYPE_HASH,
-    .key_size = IP6_KEY_SIZE,
-    .value_size = IP6_VALUE_SIZE,
-    .max_entries = 1024,
-};
+struct
+{
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __type(key, unsigned int);
+    __type(value, unsigned int);
+    // __type(key, struct _5tuple);
+    // __type(value, struct pdm_flow_details);
+    __uint(max_entries, 1024);
+    // __uint(pinning, 1);
+} ip4_map SEC(".maps");
 
-// struct
-// {
-//     __uint(type, BPF_MAP_TYPE_HASH);
-//     __type(key, unsigned int);
-//     __type(value, unsigned int);
-//     // __type(key, struct _5tuple);
-//     // __type(value, struct pdm_flow_details);
-//     __uint(max_entries, 1024);
-//     // __uint(pinning, 1);
-// } ip4_map SEC(".maps");
-
-// struct
-// {
-//     __uint(type, BPF_MAP_TYPE_HASH);
-//     __type(key, unsigned int);
-//     __type(value, unsigned int);
-//     // __type(key, struct _5tuple);
-//     // __type(value, struct pdm_flow_details);
-//     __uint(max_entries, 1024);
-//     // __uint(pinning, 1);
-// } ip6_map SEC(".maps");
+struct
+{
+    __uint(type, BPF_MAP_TYPE_HASH);
+    __type(key, struct ipv6key);
+    __type(value, struct ipv6key);
+    // __type(key, struct _5tuple);
+    // __type(value, struct pdm_flow_details);
+    __uint(max_entries, 1024);
+    // __uint(pinning, 1);
+} ip6_map SEC(".maps");
 
 // Define the xdp program function
 SEC("xdp")
