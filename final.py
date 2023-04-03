@@ -77,14 +77,15 @@ b = BPF(text=program)
 fn = b.load_func("xdp_prog", BPF.XDP)
 
 # Attach the XDP program to the interface
-device = "wlp5s0"
+device = "lo"
 b.attach_xdp(device, fn)
 
 # get a reference to the map
 ip4_map = b["ip4_map"]
 
 # Add an ip address to the ip4 map
-dos_ip = "10.53.114.168"
+#dos_ip = "10.53.114.168"
+dos_ip = "127.0.0.1"
 ip_hex = struct.unpack("!I", socket.inet_aton(dos_ip))[0]
 
 # convert it into a ctypes instance
